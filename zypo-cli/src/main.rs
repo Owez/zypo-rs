@@ -15,10 +15,10 @@ use std::fs::File;
 use std::io::prelude::*;
 use std::path::PathBuf;
 use std::process;
-use zypo_lib::parser::ast_result;
+use zypo_lib::parser::grammar;
 
-/// Exits with error 1 displaying given &[str]
-fn exit_err(msg: &str) -> ! {
+/// Exits with error 1 displaying given [String]
+fn exit_err(msg: String) -> ! {
     eprintln!(
         "\n## Fatal error\n\nThere was a fatal error when compiling:\n\n```none\n{}\n```",
         msg
@@ -31,35 +31,42 @@ fn exit_err(msg: &str) -> ! {
 fn read_file_or_err(path: PathBuf) -> String {
     let mut file = match File::open(path) {
         Ok(f) => f,
-        Err(_) => exit_err("Could not open given file, please check I have permission to do so"),
+        Err(_) => exit_err(
+            "Could not open given file, please check I have permission to do so".to_string(),
+        ),
     };
 
     let mut contents = String::new();
 
     match file.read_to_string(&mut contents) {
         Ok(_) => contents,
-        Err(_) => exit_err("Could not load given file as utf-8, please check encoding"),
+        Err(_) => exit_err("Could not load given file as utf-8, please check encoding".to_string()),
     }
 }
 
 /// Returns the AST for the zypo file given
 fn ast_gen(args: Vec<String>) {
-    println!("# Zypo compile log\n\nThis is the markdown log for Zypo updated in realtime when compiling.");
+    println!("# AST compilation log\n\nThis is the markdown compilation log for Zypo's `--ast` functionality.");
 
     if args.len() != 1 {
-        exit_err("Please supply 1 argument for the zypo file");
+        exit_err("Please supply 1 argument for the zypo file".to_string());
     }
 
     let file_path = PathBuf::from(args[0].clone());
 
     if !file_path.exists() {
-        exit_err("Please provide a valid file path!");
+        exit_err("Please provide a valid file path!".to_string());
     }
 
     let file_string = read_file_or_err(file_path);
-    let ast = ast_result(&file_string);
-
-    println!("\n## AST Result\n\nThe following is the found successfully-parsed AST for the given file:\n\n```none\n{:#?}\n```", ast);
+    match grammar::GrammarParser::new().parse(&file_string) {
+        Ok(ast) => println!("\n## AST Result\n\nThe following is the found successfully-parsed AST for the given file:\n\n```none\n{:#?}\n```", ast),
+        Err(e) => {
+            // custom error instead of [error_exit]
+            eprintln!("\n## Parsing error\n\nAn error has occured whilst parsing the given Zypo code:\n\n```none\n{:#?}\n```", e);
+            process::exit(1);
+        }
+    };
 }
 
 /// Builds the [climake]-based CLI.
@@ -73,7 +80,7 @@ fn build_cli() -> CliMake {
 
     match CliMake::new(args, Some("Compiler for the Zypo language.")) {
         Ok(cli) => cli,
-        Err(_) => exit_err("Could not build CLI, this shouldn't happen!"),
+        Err(_) => exit_err("Could not build CLI, this shouldn't happen!".to_string()),
     }
 }
 

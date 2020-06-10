@@ -92,8 +92,8 @@ Expression: ExpressionNode = {
 
 /// Binary comparison for [ExpressionCompare].
 BinOpBinaryGroup: BinOp = {
-    "||" => BinOp::Or,
-    "&&" => BinOp::And,
+    "or" => BinOp::Or,
+    "and" => BinOp::And,
 }
 
 /// 2nd level of an expression.
