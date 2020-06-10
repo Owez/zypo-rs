@@ -1,5 +1,12 @@
 # `zypo-lib`
 
-`zypo-lib` is the backend library of the Zypo languages and contains the guts of the compiler.
+## Other Documentation
 
-If you want to see the documentation for the overall Zypo compiler, please see the main [Zypo repository](https://gitlab.com/owez/zypo).
+Links to rest of the Zypo (`zypo-rs`) compiler:
+
+- [General compiler docs](https://github.com/scOwez/zypo-rs)
+- [`zypo-cli` - CLI documentation]() ***Coming soon***
+
+## About
+
+`zypo-lib` is the backend library of the Zypo languages and contains the guts of the compiler.
