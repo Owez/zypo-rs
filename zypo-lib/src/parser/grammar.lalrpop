@@ -1,0 +1,238 @@
+use std::str::FromStr;
+use crate::parser::ast::{
+    Function,
+    Parameter,
+    StatementNode,
+    ExpressionNode,
+    VarType,
+    Variable,
+    WhileLoop,
+    Constant,
+    BinOp,
+    If,
+    FunctionCall
+};
+use crate::parser::scope::Scope;
+
+grammar;
+
+/// Top-level grammar.
+pub Grammar: Vec<Function> = {
+    ( <FunctionDecl> )*
+}
+
+/// Function decleration.
+FunctionDecl: Function = {
+    <d:DocString?> "fun" <i:Identifier> "(" <p:ParameterDecls?> ")" <rt:("->" <Types>)?> "{" <b:Statements> "}" =>
+        Function {
+            ident: i,
+            params: p.unwrap_or(vec![]),
+            body: b,
+            return_type: rt.unwrap_or(VarType::Void),
+            docs: d,
+        }
+}
+
+/// Group of statements.
+Statements: Vec<StatementNode> = {
+    ( <Statement> )*
+}
+
+/// Documentation string for docs of data structures. This will allow the
+/// following:
+/// 
+/// ```zypo
+/// --- This is a *docstring* and they are __markdown compatible*.
+/// --- It can also go on multiple lines!
+/// fn hello() {}
+/// ```
+DocString: String = {
+    r"(---[^\n]*\n)+" => <>[0..(<>.len() - 1)].split("---").map(|d| d.trim_start()).collect::<String>()
+}
+
+/// End-of-line comment.
+Comment = r"--[^--]*\n";
+
+/// Statement switcher, containing various statements for [StatementNode].
+Statement: StatementNode = {
+    <FunctionDecl> => StatementNode::Function(<>),
+    <WhileLoopDecl> => StatementNode::WhileLoop(<>),
+    <VariableDecl> => StatementNode::Variable(<>),
+    <IfDecl> => StatementNode::If(<>),
+    <ReturnDecl> => StatementNode::Return(<>),
+    <Expression> ";" => StatementNode::Expression(<>),
+}
+
+/// Return statement for a function.
+ReturnDecl: ExpressionNode = {
+    "return" <Expression> ";"
+}
+
+/// If statement.
+IfDecl: If = {
+    "if" "(" <e:Expression> ")" "{" <b:Statements> "}" => If { condition: e, body: b }
+}
+
+/// Variable decleration statement for creating variables.
+VariableDecl: Variable = {
+    "var" <p:ParameterDecl> "=" <e:Expression> ";" => {
+        let (p_name, p_type) = (p.ident, p.ty);
+
+        Variable { ident: p_name, ty: p_type, body: Box::new(e) }
+    },
+}
+
+/// Shorthand functions (name + type) for using in [FunctionDecl] signatures or
+/// structures.
+ParameterDecls: Vec<Parameter> = {
+    <p:ParameterDecls> "," <n:ParameterDecl> => {
+        let mut expr_return = p;
+        expr_return.push(n);
+        expr_return
+    },
+    <ParameterDecl> => vec![<>],
+}
+
+/// While statement.
+WhileLoopDecl: WhileLoop = {
+    "while" "(" <e:Expression> ")" "{" <b:Statements> "}" =>
+        WhileLoop { condition: e, body: b }
+}
+
+/// Top-level expression node. This is the lowest level of an expression.
+Expression: ExpressionNode = {
+    <l:Expression> <b:BinOpBinaryGroup> <r:ExpressionCompare> =>
+        ExpressionNode::BinOp(Box::new(l), b, Box::new(r)),
+    ExpressionCompare
+}
+
+/// Binary comparison for [ExpressionCompare].
+BinOpBinaryGroup: BinOp = {
+    "||" => BinOp::Or,
+    "&&" => BinOp::And,
+}
+
+/// 2nd level of an expression.
+ExpressionCompare: ExpressionNode = {
+    <l:ExpressionCompare> <b:BinOpCompare> <r:ExpressionAddSub> =>
+        ExpressionNode::BinOp(Box::new(l), b, Box::new(r)),
+    ExpressionAddSub
+}
+
+/// Comparison operators for [Expression].
+BinOpCompare: BinOp = {
+    "==" => BinOp::IsEqual,
+    "!=" => BinOp::NotEqual,
+    ">" => BinOp::GreaterThan,
+    "<" => BinOp::LessThan,
+    "<=" => BinOp::LessThanOrEqual,
+    ">=" => BinOp::GreaterThanOrEqual,
+}
+
+/// 3rd level of an expression.
+ExpressionAddSub: ExpressionNode = {
+    <l:ExpressionAddSub> <b:BinOpAddSub> <r:ExpressionFactor> =>
+        ExpressionNode::BinOp(Box::new(l), b, Box::new(r)),
+    ExpressionFactor
+}
+
+/// Adding/subtracting operators for [ExpressionAddSub] (`AS` of `BIDMAS`).
+BinOpAddSub: BinOp = {
+    "+" => BinOp::Add,
+    "-" => BinOp::Sub,
+    "+=" => BinOp::PlusAssign,
+    "-=" => BinOp::SubtractAssign,
+}
+
+/// 4th level of an expression.
+ExpressionFactor: ExpressionNode = {
+    <l:ExpressionFactor> <b:BinOpFactor> <r:ExpressionIndecies> =>
+        ExpressionNode::BinOp(Box::new(l), b, Box::new(r)),
+    ExpressionIndecies
+}
+
+/// Factor comparisons/operators for [ExpressionFactor]. These are
+/// multiply/divide (the `MA` of `BIDMAS`).
+BinOpFactor: BinOp = {
+    "*" => BinOp::Mul,
+    "/" => BinOp::Div,
+}
+
+/// 5th level of an expression.
+ExpressionIndecies: ExpressionNode = {
+    <l:ExpressionIndecies> <b:BinOpIndecies> <r:ExpressionBase> =>
+        ExpressionNode::BinOp(Box::new(l), b, Box::new(r)),
+    ExpressionBase
+}
+
+/// Common indecies for [ExpressionIndecies]. This is the `I` of `BIDMAS`.
+BinOpIndecies: BinOp = {
+    "^" => BinOp::Power,
+    "**" => BinOp::Power,
+    "%" => BinOp::Mod
+}
+
+/// Lowest, most important expression (when it comes to math operations). This
+/// would be the `B` of `BIDMAS`.
+ExpressionBase: ExpressionNode = {
+    "(" <Expression> ")",
+    <ConstantDecl> => ExpressionNode::Constant(<>),
+    <Identifier> => ExpressionNode::VariablePoint(<>),
+    <FunctionCallDecl> => ExpressionNode::FunctionCall(<>),
+}
+
+/// A function call decleration (this is an expression).
+FunctionCallDecl: FunctionCall = {
+    <i:Identifier> "(" <ep:ExpressionParameterDecls> ")" =>
+        FunctionCall { ident: i, expr_params: ep }
+}
+
+/// Similar to [ParameterDecls] but uses expressions instead of simple
+/// parameters.
+ExpressionParameterDecls: Vec<ExpressionNode> = {
+    <p:ExpressionParameterDecls> "," <n:Expression> => {
+        let mut expr_return = p;
+        expr_return.push(n);
+        expr_return
+    },
+    <Expression> => vec![<>],
+}
+
+/// A constant switcher for various types of constants.
+ConstantDecl: Constant = {
+    NumConst => Constant::Int(<>),
+    StringConst => Constant::Str(<>),
+    BoolConst => Constant::Bool(<>),
+}
+
+/// Low-level grammar for parameters with the grammar: `name: type`.
+ParameterDecl: Parameter = {
+    <ident:Identifier> ":" <ty:Types> => Parameter { ident, ty }
+}
+
+/// Converts names of types into the type enum.
+Types: VarType = {
+    "int" => VarType::Int,
+    "str" => VarType::Str,
+    "bool" => VarType::Bool
+}
+
+/// Identifier regex for proper identification of variables, functions and other
+/// data structures.
+Identifier: String = {
+    <r"[a-z][0-9a-zA-Z_]*"> => <>.to_string()
+};
+
+/// Regex detection for anything wrapped in strings. Will not auto-format escape
+/// characters unless Rust does it automatically.
+StringConst: String = r#""[^"]*""# => <>[1..<>.len() - 1].to_string();
+
+/// Determines a `true/false` of a boolean value.
+BoolConst: bool = {
+    "true" => true,
+    "false" => false
+}
+
+/// A number constant that converts a string into a [i32] value. This will panic
+/// if it fails.
+NumConst: i32 = r"(\-?)[0-9]+" => i32::from_str(<>).unwrap();

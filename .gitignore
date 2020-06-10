@@ -1,0 +1,16 @@
+# Common Rust
+/target
+*/target
+**/*.rs.bk
+Cargo.lock
+
+# Parser grammar output/build
+src/parser/grammar.rs
+
+# Testing file for CLI
+test_cli.zy
+*/test_cli.zy
+
+# IDE metadata
+.vscode/
+.idea/
