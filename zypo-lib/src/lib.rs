@@ -1,7 +1,7 @@
-//! The main backend for Zypo.
+//! The main guts of the Zypo language.
 
 #[macro_use]
 extern crate lalrpop_util;
 
-pub mod backend;
+pub mod codegen;
 pub mod parser;
