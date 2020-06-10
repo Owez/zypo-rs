@@ -1,10 +1,10 @@
 [package]
 name = "zypo-lib"
-description = "Backend library for zypo-rs."
+description = "`zypo-lib` is the backend library of the Zypo languages and contains the guts of the compiler."
 readme = "README.md"
 repository = "https://gitlab.com/Owez/zypo-rs"
 license = "MIT"
-version = "0.0.2"
+version = "0.0.3"
 authors = ["Owez <owez@scalist.net>"]
 edition = "2018"
 

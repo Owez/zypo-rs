@@ -52,8 +52,21 @@ fun fibonacci(stop_iteration) {
 
 ## Project structure
 
-Below is the file and module structure for this repository and Zypo as a whole:
+In the sublevels are descriptions on each made part of this compiler.
 
-- **`/`** -- Main repository, named "Zypo" or specifically "`zypo-rs`" (always lowercase in codeblock)
-  - **`zypo-lib/`** -- Compiler library, named "`zypo-lib`" (always lowercase in codeblock)
-  - **`zypo/`** -- Main compiler CLI, named "`zypo`" (always lowercase in codeblock)
+### **`/`** - Main repository
+
+- Contains general docs on the rest of zypo including setup and running
+- Contains the 2 core Zypo modules, `zypo-lib` (the main compiler library) and `zypo` (the cli)
+- Named "Zypo"/"The compiler" or if referencing in docs "`zypo-rs`" (always lowercase in codeblock)
+
+#### `zypo-lib/` - Compiler library
+
+- Named "The compiler library" or "`zypo-lib`" (always lowercase in codeblock)
+- Contains the main guts of the compiler and a simple API to connect outside code to multiple stages of the library
+
+#### `zypo-cli/` - Main CLI
+
+- Named "The CLI" or "`zypo-cli`" (always lowercase in codeblock)
+- The CLI the majority of people use to interact with Zypo
+- On releasing the binary, the name is shortened to just `./zypo` for linux or `./zypo.exe` for windows
