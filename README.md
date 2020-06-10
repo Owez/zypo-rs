@@ -1,4 +1,7 @@
-# Zypo
+<div style="text-align:center">
+    <h1>Zypo</h1>
+    <img src="logo.png" width="100" style="border-radius:1rem;"/>
+</div>
 
 Zypo is a new language focused on portability and developer needs ✨
 
