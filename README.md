@@ -2,6 +2,8 @@
     <img src="banner.png" width="400" style="border-radius:1rem;"/>
 </div>
 
+----
+
 Zypo is a new language focused on portability and developer needs ✨
 
 ## Objectives
