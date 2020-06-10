@@ -62,17 +62,17 @@ In the sublevels are descriptions on each made part of this compiler.
 - Contains the 2 core Zypo modules, `zypo-lib` (the main compiler library) and `zypo` (the cli)
 - Named "Zypo"/"The compiler" or if referencing in docs "`zypo-rs`" (always lowercase in codeblock)
 
-#### `zypo-lib/` - Compiler library
+#### **`/zypo-lib/`** - Compiler library
 
 - Named "The compiler library" or "`zypo-lib`" (always lowercase in codeblock)
 - Contains the main guts of the compiler and a simple API to connect outside code to multiple stages of the library
 
-#### `zypo-cli/` - Main CLI
+#### **`/zypo-cli/`** - Main CLI
 
 - Named "The CLI" or "`zypo-cli`" (always lowercase in codeblock)
 - The CLI the majority of people use to interact with Zypo
 - On releasing the binary, the name is shortened to just `./zypo` for linux or `./zypo.exe` for windows
 
-#### `examples/` - Zypo examples
+#### **`/examples/`** - Zypo examples
 
 - Contains some examples for `.zy`/Zypo code that are used in this README
