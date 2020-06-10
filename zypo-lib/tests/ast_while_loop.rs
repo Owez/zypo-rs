@@ -19,7 +19,6 @@ fn while_loop_basic() {
             body: vec![],
         })],
         docs: None,
-        return_type: VarType::Void,
     }];
 
     assert_eq!(ast_result(input_str), expected);
@@ -30,7 +29,7 @@ fn while_loop_basic() {
 /// This checks valid input.
 #[test]
 fn while_loop_body() {
-    let input_str = "fun test_while() { while(2 == 2) { var x: int = 1; } }";
+    let input_str = "fun test_while() { while(2 == 2) { var x = 1; } }";
     let expected = vec![Function {
         ident: "test_while".to_string(),
         params: vec![],
@@ -42,12 +41,10 @@ fn while_loop_body() {
             ),
             body: vec![StatementNode::Variable(Variable {
                 ident: "x".to_string(),
-                ty: VarType::Int,
                 body: Box::new(ExpressionNode::Constant(Constant::Int(1))),
             })],
         })],
         docs: None,
-        return_type: VarType::Void,
     }];
 
     assert_eq!(ast_result(input_str), expected);

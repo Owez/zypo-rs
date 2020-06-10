@@ -25,7 +25,6 @@ lalrpop_mod!(
     ///             body: vec![],
     ///             params: vec![],
     ///             docs: None,
-    ///             return_type: parser::ast::VarType::Void
     ///         }
     ///     ];
     /// 

@@ -132,8 +132,7 @@ pub struct FunctionCall {
     pub expr_params: Vec<ExpressionNode>,
 }
 
-/// Similar to the [VarType] enum but with defined data in each possible
-/// option.
+/// All the builtin constant types
 #[derive(Debug, PartialEq)]
 pub enum Constant {
     /// Integer constant that translates to [i32].
@@ -144,25 +143,6 @@ pub enum Constant {
 
     // Bool constant that translates to [bool].
     Bool(bool),
-}
-
-/// Variable types for zypo-rs.
-///
-/// NOTE: Please see [Constant] if you would like to include the literal value,
-/// not just the type in certain cases.
-#[derive(Debug, PartialEq, Clone, Copy)]
-pub enum VarType {
-    /// An integer type (whole number).
-    Int,
-
-    /// A string type (char array/other types). This is not fully worked out yet.
-    Str,
-
-    /// A boolean (true/false).
-    Bool,
-
-    /// A null type, primarily used for functions that do not return anything.
-    Void,
 }
 
 /// A function statement, the basis for the whole language.
@@ -180,7 +160,7 @@ pub struct Function {
     pub ident: String,
 
     /// [Parameter]s declared inside of the function signature.
-    pub params: Vec<Parameter>,
+    pub params: Vec<String>,
 
     /// The main body inside of the function.
     pub body: Vec<StatementNode>,
@@ -190,26 +170,6 @@ pub struct Function {
     /// NOTE: This may be bound to a trait in the future to extend to other
     /// datatypes.
     pub docs: Option<String>,
-
-    /// Expected return type inside of the function signature.
-    pub return_type: VarType,
-}
-
-/// AST node that contains a parameter (used inside of function declerations or
-/// for the start of [Variable]).
-///
-/// # Syntax example
-///
-/// ```none
-/// my_id: str
-/// ```
-#[derive(Debug, PartialEq)]
-pub struct Parameter {
-    /// Name of the parameter
-    pub ident: String,
-
-    /// Expected parameter type
-    pub ty: VarType,
 }
 
 /// Variable that includes a parameter but extends with a recursive
@@ -224,9 +184,6 @@ pub struct Parameter {
 pub struct Variable {
     /// Variable name/identifier.
     pub ident: String,
-
-    /// The expected type of the varible.
-    pub ty: VarType,
 
     /// An expression body that can be evaluated (1x [ExpressionNode]).
     pub body: Box<ExpressionNode>,

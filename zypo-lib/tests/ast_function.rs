@@ -7,16 +7,12 @@ use zypo_lib::parser::ast_result;
 /// This checks valid input.
 #[test]
 fn basic_function() {
-    let input_str = "fun hello_there(hi: str) {}";
+    let input_str = "fun hello_there(hi) {}";
     let expected = vec![Function {
         ident: "hello_there".to_string(),
-        params: vec![Parameter {
-            ident: "hi".to_string(),
-            ty: VarType::Str,
-        }],
+        params: vec!["hi".to_string()],
         docs: None,
         body: vec![],
-        return_type: VarType::Void,
     }];
 
     assert_eq!(ast_result(input_str), expected);
@@ -28,7 +24,7 @@ fn basic_function() {
 /// This checks valid input.
 #[test]
 fn body_return() {
-    let input_str = "fun return_function() -> int { return 5; }";
+    let input_str = "fun return_function() { return 5; }";
     let expected = vec![Function {
         ident: "return_function".to_string(),
         params: vec![],
@@ -36,7 +32,6 @@ fn body_return() {
             Constant::Int(5),
         ))],
         docs: None,
-        return_type: VarType::Int,
     }];
 
     assert_eq!(ast_result(input_str), expected);
@@ -53,7 +48,6 @@ fn docstrings() {
         params: vec![],
         body: vec![],
         docs: Some("This is a docstring test!".to_string()),
-        return_type: VarType::Void,
     }];
 
     assert_eq!(ast_result(input_str), expected);

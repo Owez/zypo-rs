@@ -1,10 +1,8 @@
 use std::str::FromStr;
 use crate::parser::ast::{
     Function,
-    Parameter,
     StatementNode,
     ExpressionNode,
-    VarType,
     Variable,
     WhileLoop,
     Constant,
@@ -23,12 +21,11 @@ pub Grammar: Vec<Function> = {
 
 /// Function decleration.
 FunctionDecl: Function = {
-    <d:DocString?> "fun" <i:Identifier> "(" <p:ParameterDecls?> ")" <rt:("->" <Types>)?> "{" <b:Statements> "}" =>
+    <d:DocString?> "fun" <i:Identifier> "(" <p:ParameterDecls?> ")" "{" <b:Statements> "}" =>
         Function {
             ident: i,
             params: p.unwrap_or(vec![]),
             body: b,
-            return_type: rt.unwrap_or(VarType::Void),
             docs: d,
         }
 }
@@ -75,22 +72,9 @@ IfDecl: If = {
 
 /// Variable decleration statement for creating variables.
 VariableDecl: Variable = {
-    "var" <p:ParameterDecl> "=" <e:Expression> ";" => {
-        let (p_name, p_type) = (p.ident, p.ty);
-
-        Variable { ident: p_name, ty: p_type, body: Box::new(e) }
+    "var" <i:Identifier> "=" <e:Expression> ";" => {
+        Variable { ident: i, body: Box::new(e) }
     },
-}
-
-/// Shorthand functions (name + type) for using in [FunctionDecl] signatures or
-/// structures.
-ParameterDecls: Vec<Parameter> = {
-    <p:ParameterDecls> "," <n:ParameterDecl> => {
-        let mut expr_return = p;
-        expr_return.push(n);
-        expr_return
-    },
-    <ParameterDecl> => vec![<>],
 }
 
 /// While statement.
@@ -205,16 +189,15 @@ ConstantDecl: Constant = {
     BoolConst => Constant::Bool(<>),
 }
 
-/// Low-level grammar for parameters with the grammar: `name: type`.
-ParameterDecl: Parameter = {
-    <ident:Identifier> ":" <ty:Types> => Parameter { ident, ty }
-}
-
-/// Converts names of types into the type enum.
-Types: VarType = {
-    "int" => VarType::Int,
-    "str" => VarType::Str,
-    "bool" => VarType::Bool
+/// Shorthand functions (name + type) for using in [FunctionDecl] signatures or
+/// structures.
+ParameterDecls: Vec<String> = {
+    <p:ParameterDecls> "," <i:Identifier> => {
+        let mut expr_return = p;
+        expr_return.push(i);
+        expr_return
+    },
+    <Identifier> => vec![<>],
 }
 
 /// Identifier regex for proper identification of variables, functions and other

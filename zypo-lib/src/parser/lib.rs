@@ -26,16 +26,12 @@ use crate::parser::grammar;
 /// use zypo_lib::parser::ast::*;
 ///
 /// fn main() {
-///     let input_str = "fun hello_there(hi: str) {}";
+///     let input_str = "fun hello_there(hi) {}";
 ///     let expected = vec![Function {
 ///         ident: "hello_there".to_string(),
-///         params: vec![Parameter {
-///             ident: "hi".to_string(),
-///             ty: VarType::Str,
-///         }],
+///         params: vec!["hi".to_string()],
 ///         docs: None,
 ///         body: vec![],
-///         return_type: VarType::Void,
 ///     }];
 ///     assert_eq!(ast_result(input_str), expected);
 /// }
@@ -61,7 +57,6 @@ use crate::parser::grammar;
 ///             body: vec![],
 ///         })],
 ///         docs: None,
-///         return_type: VarType::Void,
 ///     }];
 ///
 ///     assert_eq!(ast_result(input_str), expected);
