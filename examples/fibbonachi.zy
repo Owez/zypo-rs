@@ -1,0 +1,8 @@
+--- Fibbonacci sequence written in Zypo.
+fun fibonacci(stop_iteration) {
+    if (stop_iteration == (0 or 1)) {
+        return 0; -- return just 0 as user input is incorrect.
+    }
+
+    return fibonacci(stop_iteration - 1) + fibonacci(stop_iteration - 2);
+}

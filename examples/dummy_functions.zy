@@ -1,0 +1,17 @@
+--- First dummy function
+fun hello(other_int) {
+    if(other_int == 5) {
+        var x = 24;
+
+        while(x / other_int != 2) {
+            --snip--
+        }
+    }
+
+    var result = "hello";
+}
+
+--- Second dummy function
+fun mul_x(first, second) {
+    return first * second == 6;
+}

@@ -48,6 +48,8 @@ fun fibonacci(stop_iteration) {
 }
 ```
 
+You can find more code examples in the `examples/` directory in the same path as this README!
+
 *Note: we use kotlin for markdown highlighting as Zypo highlighting is not supported just yet.. 🤞*
 
 ## Project structure
@@ -70,3 +72,7 @@ In the sublevels are descriptions on each made part of this compiler.
 - Named "The CLI" or "`zypo-cli`" (always lowercase in codeblock)
 - The CLI the majority of people use to interact with Zypo
 - On releasing the binary, the name is shortened to just `./zypo` for linux or `./zypo.exe` for windows
+
+#### `examples/` - Zypo examples
+
+- Contains some examples for `.zy`/Zypo code that are used in this README

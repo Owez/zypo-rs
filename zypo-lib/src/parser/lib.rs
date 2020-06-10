@@ -1,12 +1,21 @@
 use crate::parser::ast::*;
 use crate::parser::grammar;
 
-/// Gets the abstract syntax tree generated from the parser of `zypo-lib`. This
-/// function will panic is parsing fails and is intended for developers aiming
-/// to implament the parser into code generation.
-///
-/// Please see [Function] for more infomation of what this will immidiatly
-/// return.
+/// Gets the abstract syntax tree generated from the parser of `zypo-lib`.
+/// 
+/// Please see [Function] for more infomation of what this will return if it
+/// succeeds parsing.
+/// 
+/// This function is intended to be a quick shortcut if you don't mind a possible
+/// `panic()` occuring upon a failed parse. If you do, you may want to look at
+/// directly using:
+/// 
+/// ```norun
+/// match grammar::GrammarParser::new().parse("fun empty() {}") {
+///     Ok(_) => println!("It works!"),
+///     Err(_) => eprintln!("Nope..")
+/// };
+/// ```
 ///
 /// # Examples
 ///
